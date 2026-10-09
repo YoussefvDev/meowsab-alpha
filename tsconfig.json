@@ -5,24 +5,7 @@
     "rootDir": "./src",
     "outDir": "./dist",
 
-    // Path Aliases
-    "baseUrl": ".",
-    "paths": {
-      "#check-buyers":  ["./src/core/socket/providers/check-buyers.ts"],
-      "#check-premium": ["./src/core/socket/providers/check-premium.ts"],
-      "#types":         ["./src/core/types/index.ts"],
-      "#banners":       ["./src/core/banners/index.ts"],
-      "#message":       ["./src/core/socket/message/index.ts"],
-      "#session":       ["./src/session/index.ts"],
-      "#helpers":       ["./src/core/helpers/index.ts"],
-      "#listeners":     ["./src/core/listeners/index.ts"],
-      "#sending":       ["./src/core/socket/sending/index.ts"],
-      "#maker":         ["./src/core/socket/maker.ts"],
-      "#hono":          ["./src/core/socket/providers/api.ts"],
-      "#system":        ["./src/core/socket/providers/check-system.ts"],
-      "#methods":       ["./src/core/socket/methods.ts"],
-      "#index":         ["./src/index.ts"]
-    },
+    // hahaha 
 
     // Environment Settings
     // See also https://aka.ms/tsconfig/module

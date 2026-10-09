@@ -39,7 +39,8 @@
         "types": "./dist/index.d.ts",
         "default": "./dist/index.cjs"
       }
-    }
+    },
+    "./safe": "./safe.js"
   },
   "dependencies": {
     "@hapi/boom": "^10.0.1",
