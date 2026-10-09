@@ -8,11 +8,12 @@ declare const ConfigSchema: z.ZodObject<{
     }, z.core.$strip>>;
     library: z.ZodOptional<z.ZodArray<z.ZodAny>>;
     socket: z.ZodOptional<z.ZodUnion<readonly [z.ZodNumber, z.ZodRecord<z.ZodString, z.ZodAny>]>>;
-    interactions: z.ZodDefault<z.ZodObject<{
-        message_baileys: z.ZodDefault<z.ZodBoolean>;
-        private_mode: z.ZodDefault<z.ZodBoolean>;
-        message_owner_only: z.ZodDefault<z.ZodBoolean>;
-        message_group_only: z.ZodDefault<z.ZodBoolean>;
+    settings: z.ZodDefault<z.ZodObject<{
+        no_message_baileys: z.ZodBoolean;
+        from_me: z.ZodBoolean;
+        private_mode: z.ZodBoolean;
+        message_owner_only: z.ZodBoolean;
+        message_group_only: z.ZodBoolean;
     }, z.core.$strip>>;
     reconnect: z.ZodDefault<z.ZodObject<{
         retry_delay: z.ZodDefault<z.ZodNumber>;
@@ -46,7 +47,6 @@ declare const ConfigSchema: z.ZodObject<{
     plugsdir: z.ZodOptional<z.ZodString>;
     prefix: z.ZodDefault<z.ZodUnion<readonly [z.ZodString, z.ZodArray<z.ZodString>]>>;
     info: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodAny>>;
-    settings: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodAny>>;
 }, z.core.$strip>;
 
 type ConfigTypes = z.infer<typeof ConfigSchema>;
