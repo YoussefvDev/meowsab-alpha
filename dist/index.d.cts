@@ -622,4 +622,80 @@ declare const Utils: {
     randomPassword: typeof randomPassword;
 };
 
-export { Client, Misc, Utils };
+interface AuthTypes {
+    state: any;
+    saveCreds: () => void;
+    close: () => void;
+    cleanup: () => void;
+}
+
+declare const ClientConfigSchema: z.ZodObject<{
+    root: z.ZodDefault<z.ZodString>;
+    storage: z.ZodDefault<z.ZodEnum<{
+        json: "json";
+        sqlite: "sqlite";
+        auto: "auto";
+    }>>;
+    code: z.ZodOptional<z.ZodString>;
+    main: z.ZodAny;
+    settings: z.ZodDefault<z.ZodRecord<z.ZodString, z.ZodAny>>;
+}, z.core.$strip>;
+type ClientConfig = z.infer<typeof ClientConfigSchema>;
+interface BotInfo {
+    id: string;
+    name: string;
+    phone: string | null;
+    lid: string | null;
+    connected: boolean;
+    socket: () => Promise<any>;
+}
+interface ClientEvents {
+    message: (sock: any, msg: any) => void;
+    ready: (sock: any) => void;
+    close: (sock: any, code?: number) => void;
+    pairing: (code: string, phone: string) => void;
+    qr: (qr: string, phone: string) => void;
+    removed: (phone: string) => void;
+}
+interface Listeners {
+    message?: (sock: any, msg: any) => void;
+    ready?: (sock: any) => void;
+    close?: (sock: any, code?: number) => void;
+    pairing?: (code: string, phone: string) => void;
+    qr?: (qr: string, phone: string) => void;
+}
+interface Bot {
+    phone: string;
+    code?: string;
+    dir: string;
+    sock: any | null;
+    session: AuthTypes | null;
+    connected: boolean;
+    pairingCode: string | null;
+    stopped: boolean;
+    listeners: Listeners;
+}
+
+declare class SubBots {
+    config: ClientConfig;
+    bots: Map<string, Bot>;
+    started: boolean;
+    sweep: NodeJS.Timeout | null;
+    main: any;
+    listeners: {
+        [K in keyof ClientEvents]?: ClientEvents[K][];
+    };
+    constructor(config: ClientConfig);
+    on<K extends keyof ClientEvents>(event: K, fn: ClientEvents[K]): this;
+    off<K extends keyof ClientEvents>(event: K, fn: ClientEvents[K]): this;
+    addBot(phone: string): Promise<string | null>;
+    list(): BotInfo[];
+    get(key: string): BotInfo | null;
+    socket(key: string): Promise<any>;
+    remove(key: string): Promise<boolean>;
+    removeAll(): Promise<void>;
+    start(): Promise<void>;
+    stop(): Promise<void>;
+}
+
+export { Client, Misc, SubBots, Utils };
