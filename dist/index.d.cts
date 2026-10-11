@@ -622,13 +622,6 @@ declare const Utils: {
     randomPassword: typeof randomPassword;
 };
 
-interface AuthTypes {
-    state: any;
-    saveCreds: () => void;
-    close: () => void;
-    cleanup: () => void;
-}
-
 declare const ClientConfigSchema: z.ZodObject<{
     root: z.ZodDefault<z.ZodString>;
     storage: z.ZodDefault<z.ZodEnum<{
@@ -644,7 +637,7 @@ type ClientConfig = z.infer<typeof ClientConfigSchema>;
 interface BotInfo {
     id: string;
     name: string;
-    phone: string | null;
+    phone: string;
     lid: string | null;
     connected: boolean;
     socket: () => Promise<any>;
@@ -663,16 +656,19 @@ interface Listeners {
     close?: (sock: any, code?: number) => void;
     pairing?: (code: string, phone: string) => void;
     qr?: (qr: string, phone: string) => void;
+    removed?: (phone: string) => void;
 }
 interface Bot {
+    id?: string;
     phone: string;
-    code?: string;
     dir: string;
-    sock: any | null;
-    session: AuthTypes | null;
+    sock: any;
+    session: any;
     connected: boolean;
     pairingCode: string | null;
     stopped: boolean;
+    dead?: boolean;
+    code?: string;
     listeners: Listeners;
 }
 
