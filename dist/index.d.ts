@@ -84,6 +84,7 @@ declare const Misc: {
         mime: null;
         ext: null;
     }>;
+    isValidUrl: (url: string) => boolean;
 };
 
 declare function getMediaSize(msg: any): number;
@@ -630,10 +631,12 @@ declare const ClientConfigSchema: z.ZodObject<{
         auto: "auto";
     }>>;
     code: z.ZodOptional<z.ZodString>;
+    max: z.ZodDefault<z.ZodNumber>;
     main: z.ZodAny;
     settings: z.ZodDefault<z.ZodRecord<z.ZodString, z.ZodAny>>;
 }, z.core.$strip>;
 type ClientConfig = z.infer<typeof ClientConfigSchema>;
+type ClientConfigInput = z.input<typeof ClientConfigSchema>;
 interface BotInfo {
     id: string;
     name: string;
@@ -650,27 +653,28 @@ interface ClientEvents {
     qr: (qr: string, phone: string) => void;
     removed: (phone: string) => void;
 }
-interface Listeners {
-    message?: (sock: any, msg: any) => void;
-    ready?: (sock: any) => void;
-    close?: (sock: any, code?: number) => void;
-    pairing?: (code: string, phone: string) => void;
-    qr?: (qr: string, phone: string) => void;
-    removed?: (phone: string) => void;
-}
+type EventPool = {
+    [K in keyof ClientEvents]?: ClientEvents[K][];
+};
 interface Bot {
-    id?: string;
+    id: string;
     phone: string;
     dir: string;
     sock: any;
     session: any;
     connected: boolean;
+    registered: boolean;
     pairingCode: string | null;
     stopped: boolean;
-    dead?: boolean;
-    code?: string;
-    listeners: Listeners;
+    dead: boolean;
+    retries: number;
 }
+interface BotsFull {
+    full: true;
+    count: number;
+    max: number;
+}
+type AddResult = string | null | BotsFull;
 
 declare class SubBots {
     config: ClientConfig;
@@ -678,13 +682,15 @@ declare class SubBots {
     started: boolean;
     sweep: NodeJS.Timeout | null;
     main: any;
-    listeners: {
-        [K in keyof ClientEvents]?: ClientEvents[K][];
-    };
-    constructor(config: ClientConfig);
+    listeners: EventPool;
+    private ctx;
+    constructor(config: ClientConfigInput);
+    get count(): number;
+    get max(): number;
+    get full(): boolean;
     on<K extends keyof ClientEvents>(event: K, fn: ClientEvents[K]): this;
     off<K extends keyof ClientEvents>(event: K, fn: ClientEvents[K]): this;
-    addBot(phone: string): Promise<string | null>;
+    addBot(phone: string): Promise<AddResult>;
     list(): BotInfo[];
     get(key: string): BotInfo | null;
     socket(key: string): Promise<any>;
@@ -692,6 +698,7 @@ declare class SubBots {
     removeAll(): Promise<void>;
     start(): Promise<void>;
     stop(): Promise<void>;
+    private find;
 }
 
 export { Client, Misc, SubBots, Utils };
