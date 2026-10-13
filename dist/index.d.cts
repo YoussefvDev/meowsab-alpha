@@ -643,6 +643,7 @@ interface BotInfo {
     phone: string;
     lid: string | null;
     connected: boolean;
+    messages: number;
     socket: () => Promise<any>;
 }
 interface ClientEvents {
@@ -668,6 +669,12 @@ interface Bot {
     stopped: boolean;
     dead: boolean;
     retries: number;
+    erased: boolean;
+    idle: boolean;
+    idleAt: number;
+    createdAt: number;
+    gen: number;
+    messages: number;
 }
 interface BotsFull {
     full: true;
@@ -692,6 +699,14 @@ declare class SubBots {
     off<K extends keyof ClientEvents>(event: K, fn: ClientEvents[K]): this;
     addBot(phone: string): Promise<AddResult>;
     list(): BotInfo[];
+    stats(): {
+        total: number;
+        connected: number;
+        stopped: number;
+        messages: number;
+        max: number;
+        full: boolean;
+    };
     get(key: string): BotInfo | null;
     socket(key: string): Promise<any>;
     remove(key: string): Promise<boolean>;
