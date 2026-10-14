@@ -75,6 +75,7 @@ declare class Client {
     }): Promise<void>;
     plug(): any;
     clear(): void;
+    stop(): Promise<void>;
 }
 
 declare const Misc: {
